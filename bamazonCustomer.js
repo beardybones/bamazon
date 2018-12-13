@@ -12,14 +12,16 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
 });
-
-connection.query(
-    "SELECT * FROM products", function (err, data) {
+showUpdatedTable();
+function showUpdatedTable() {
+    connection.query(
+    "SELECT * FROM products", function (err, table) {
         if (err) throw err;
-        console.table(data);
+        console.table(table);
         start();
     }
 )
+}
 function start() {
     inquirer.prompt([
         {
@@ -38,14 +40,36 @@ function start() {
         connection.query(
             "SELECT * FROM products WHERE ?",
             [{
-                item_ID: response.item_id
+                item_ID: response.item_ID
             }],
             function (err,data) {
                 if (err) throw err;
-                console.log(data);
+                if (data[0].stock_quantity >= response.howMany) {
+                    // decrement stock quantity
+                    data[0].stock_quantity -= response.howMany
+                    // multiply response.howMany by price
+                    var total = response.howMany * data[0].price;
+                    console.log("Your order is complete! Your total cost is: $" + total);
+                    // console.table(table);
+                    showUpdatedTable();
+                } else (console.log("Insufficient quantity!"),start())
+                
+                connection.query(
+                    "UPDATE products SET ? WHERE ?",
+                    [{
+                        stock_quantity: data[0].stock_quantity
+                    },
+                    {
+                        item_ID: response.item_ID
+                    }
+                ]
+                )
+                connection.end();
             }
         )
+
     }
     );
 
 }
+// connection.end();
