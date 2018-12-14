@@ -49,6 +49,7 @@ function start() {
                     data[0].stock_quantity -= response.howMany
                     // multiply response.howMany by price
                     var total = response.howMany * data[0].price;
+                    total = total.toFixed(2);
                     console.log("Your order is complete! Your total cost is: $" + total);
                     // console.table(table);
                     showUpdatedTable();
@@ -64,7 +65,6 @@ function start() {
                     }
                 ]
                 )
-                connection.end();
             }
         )
 
@@ -72,4 +72,3 @@ function start() {
     );
 
 }
-// connection.end();
